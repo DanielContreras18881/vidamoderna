@@ -42,7 +42,14 @@ public class Player : MonoBehaviour {
 		if (other.tag == "Wall") {
 			rb.isKinematic = true;
 			isInsideLimits = false;
-			rb.velocity = Vector3.down;
+			isGrounded = Mathf.RoundToInt (transform.position.y) == floor;
+			if (isGrounded) {
+				rb.velocity = Vector3.zero;
+			} else {
+				rb.velocity = Vector3.down * jumpForce;
+				//rb.AddForce (Vector2.down * jumpForce, ForceMode2D.Impulse);
+			}
+
 		}
 
 	}
