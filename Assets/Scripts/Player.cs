@@ -42,13 +42,8 @@ public class Player : MonoBehaviour {
 		if (other.tag == "Wall") {
 			rb.isKinematic = true;
 			isInsideLimits = false;
-			isGrounded = Mathf.RoundToInt (transform.position.y) == floor;
-			if (isGrounded) {
-				rb.velocity = Vector3.zero;
-			} else {
-				rb.velocity = Vector3.down * jumpForce;
-				//rb.AddForce (Vector2.down * jumpForce, ForceMode2D.Impulse);
-			}
+			rb.velocity = Vector3.down * jumpForce;
+			spriteRenderer.flipX = !spriteRenderer.flipX;
 
 		}
 
@@ -57,7 +52,7 @@ public class Player : MonoBehaviour {
 	void FixedUpdate () {
 
 		Vector3 move = new Vector3 (Input.GetAxis ("Horizontal") * speed, rb.velocity.y, 0f);
-		bool flipSprite = (spriteRenderer.flipX ? (move.x > 0.01f) : (move.x < 0.01f));
+		bool flipSprite = (spriteRenderer.flipX ? (move.x > 0f) : (move.x < 0f));
 
 		if (flipSprite) {
 			isInsideLimits = true;
