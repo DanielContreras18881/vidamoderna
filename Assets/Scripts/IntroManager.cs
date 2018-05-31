@@ -5,7 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class IntroManager : MonoBehaviour {
 
-	public void GoToBasketTraining() {
-    SceneManager.LoadScene("BallGameMenu");
+  public void GoToBasketTraining () {
+    SceneManager.LoadScene ("BallGameMenu");
+  }
+
+  public void GoToRanciusChallenge () {
+    SceneManager.LoadScene ("RanciusChallenge");
   }
 }

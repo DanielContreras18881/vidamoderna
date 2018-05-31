@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LightRotation : MonoBehaviour {
 
-	public float rotationSpeed = 2.0f;
+	float rotationSpeed = 0f;
 
 	GameObject gameController;
 	GameController gameControllerScript;
@@ -16,9 +16,12 @@ public class LightRotation : MonoBehaviour {
 
 	}
 
-	// Update is called once per frame
-	void Update () {
-		rotationSpeed *= gameControllerScript.GameLevel;
+	public void InitLights () {
+		rotationSpeed = 2.0f;
+	}
+
+	public void UpdateLevel (float value) {
+		rotationSpeed *= value;
 		// rotate lights located in the center of the screen
 		// transform.Rotate (0, 0, rotationSpeed * Time.deltaTime);
 

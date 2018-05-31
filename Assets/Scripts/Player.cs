@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
@@ -18,7 +19,6 @@ public class Player : MonoBehaviour {
 	public float jumpForce;
 	public float speed;
 	bool isGrounded;
-	bool isInsideLimits;
 
 	Rigidbody2D rb;
 	GameObject gameController;
@@ -26,23 +26,32 @@ public class Player : MonoBehaviour {
 	SpriteRenderer spriteRenderer;
 	Animator anim;
 
+	private float level = 1f;
+
 	void Start () {
 		anim = GetComponent<Animator> ();
+		anim.enabled = false;
 		gameController = GameObject.Find ("Game");
 		gameControllerScript = gameController.GetComponent<GameController> ();
 		rb = GetComponent<Rigidbody2D> ();
 		spriteRenderer = GetComponent<SpriteRenderer> ();
 		floor = Mathf.RoundToInt (transform.position.y);
 		healthSlider.value = life;
-		isInsideLimits = true;
+		gameControllerScript.OnVariableChange += InitPlayer;
+	}
+
+	public void InitPlayer () {
+		anim.enabled = true;
+	}
+
+	public void UpdateLevel (float value) {
+		level = value;
 	}
 
 	void OnTriggerEnter2D (Collider2D other) {
 
 		if (other.tag == "Wall") {
-			rb.isKinematic = true;
-			isInsideLimits = false;
-			rb.velocity = Vector3.down * jumpForce;
+			transform.position = new Vector3 (-1 * transform.position.x, transform.position.y, transform.position.z);
 			spriteRenderer.flipX = !spriteRenderer.flipX;
 
 		}
@@ -50,17 +59,15 @@ public class Player : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
+		if (anim.enabled) {
 
-		Vector3 move = new Vector3 (Input.GetAxis ("Horizontal") * speed, rb.velocity.y, 0f);
-		bool flipSprite = (spriteRenderer.flipX ? (move.x > 0f) : (move.x < 0f));
+			Vector3 move = new Vector3 (Input.GetAxis ("Horizontal") * speed, rb.velocity.y, 0f);
+			bool flipSprite = (spriteRenderer.flipX ? (move.x > 0f) : (move.x < 0f));
 
-		if (flipSprite) {
-			isInsideLimits = true;
-			spriteRenderer.flipX = !spriteRenderer.flipX;
-		}
+			if (flipSprite) {
+				spriteRenderer.flipX = !spriteRenderer.flipX;
+			}
 
-		if (isInsideLimits) {
-			rb.isKinematic = false;
 			isGrounded = Mathf.RoundToInt (transform.position.y) == floor;
 			if (isGrounded) {
 
@@ -75,7 +82,7 @@ public class Player : MonoBehaviour {
 	}
 
 	IEnumerator ResetPlayerSpeed () {
-		yield return new WaitForSeconds (2f * (gameControllerScript.GameLevel / 2));
+		yield return new WaitForSeconds (2f * (level / 2));
 		speed *= 2f;
 		jumpForce *= 4f;
 	}
@@ -87,7 +94,6 @@ public class Player : MonoBehaviour {
 
 	public void ItemCollision (int item) {
 		if (item == 0) { //Beer
-			//TODO: animation
 			anim.SetBool ("Hitted", true);
 			speed *= 0.5f;
 			jumpForce *= 0.25f;
@@ -95,7 +101,6 @@ public class Player : MonoBehaviour {
 			StartCoroutine (ResetPlayerSpeed ());
 		}
 		if (item == 1) { //CD
-			//TODO: animation
 			anim.SetBool ("Hitted", true);
 			life -= 10f;
 		}
@@ -104,12 +109,16 @@ public class Player : MonoBehaviour {
 			pointsText.GetComponent<Text> ().text = points.ToString ();
 			life += 5f;
 		}
+
 		StartCoroutine (FinishAnimation ());
+
 		if (life > 100f) life = 100f;
+		healthSlider.value = life;
+
 		if (life < 0f) {
 			life = 0f;
-			Destroy (gameObject);
+			SceneManager.LoadScene ("RanciusChallenge");
+
 		}
-		healthSlider.value = life;
 	}
 }

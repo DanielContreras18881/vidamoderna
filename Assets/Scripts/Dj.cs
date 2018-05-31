@@ -24,8 +24,11 @@ public class Dj : MonoBehaviour {
 	Camera camera;
 	GameObject gameController;
 	GameController gameControllerScript;
+	Animator anim;
 
 	void Start () {
+		anim = GetComponent<Animator> ();
+		anim.enabled = false;
 		gameController = GameObject.Find ("Game");
 		gameControllerScript = gameController.GetComponent<GameController> ();
 		items = GameObject.FindGameObjectsWithTag ("Item");
@@ -34,6 +37,11 @@ public class Dj : MonoBehaviour {
 		spriteRenderer = GetComponent<SpriteRenderer> ();
 		camera = GetComponent<Camera> ();
 		center = transform.position;
+		gameControllerScript.OnVariableChange += InitDj;
+	}
+
+	public void InitDj () {
+		anim.enabled = true;
 		StartCoroutine (WaitForFire ());
 	}
 
@@ -61,24 +69,29 @@ public class Dj : MonoBehaviour {
 		Fire ();
 	}
 
-	void Update () {
-		//speed *= gameControllerScript.GameLevel;
-		//throwSpeed *= gameControllerScript.GameLevel;
+	public void UpdateLevel (float value) {
+		speed *= (1 + value / 2);
+		throwSpeed *= (1 + value / 2);
+		fireRatep += value;
+		fireRatem -= value / 5;
+
 	}
 
 	void FixedUpdate () {
+		if (anim.enabled) {
 
-		if (Vector3.Distance (center, transform.position) > limit) {
-			movementDirection *= -1;
-		}
+			if (Vector3.Distance (center, transform.position) > limit) {
+				movementDirection *= -1;
+			}
 
-		Vector3 move = Vector3.right * movementDirection * speed * Time.deltaTime;
+			Vector3 move = Vector3.right * movementDirection * speed * Time.deltaTime;
 
-		transform.Translate (move);
+			transform.Translate (move);
 
-		bool flipSprite = (spriteRenderer.flipX ? (move.x > 0.01f) : (move.x < 0.01f));
-		if (flipSprite) {
-			spriteRenderer.flipX = !spriteRenderer.flipX;
+			bool flipSprite = (spriteRenderer.flipX ? (move.x > 0.01f) : (move.x < 0.01f));
+			if (flipSprite) {
+				spriteRenderer.flipX = !spriteRenderer.flipX;
+			}
 		}
 	}
 }
