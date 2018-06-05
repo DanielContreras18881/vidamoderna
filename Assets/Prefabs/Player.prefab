@@ -120,6 +120,7 @@ MonoBehaviour:
   life: 100
   healthSlider: {fileID: 0}
   pointsText: {fileID: 0}
+  gameOverText: {fileID: 0}
   jumpForce: 2
   speed: 10
 --- !u!212 &212708591782001088

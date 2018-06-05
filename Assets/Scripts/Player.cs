@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
@@ -13,6 +12,7 @@ public class Player : MonoBehaviour {
 	[Header ("Points Management")]
 	float points; //Player Score
 	public GameObject pointsText; //UI 3d text object
+	public GameObject gameOverText; //UI 3d text object
 
 	[Header ("Physics Settings")]
 	float floor;
@@ -31,7 +31,7 @@ public class Player : MonoBehaviour {
 	void Start () {
 		anim = GetComponent<Animator> ();
 		anim.enabled = false;
-		gameController = GameObject.Find ("Game");
+		gameController = GameObject.Find ("GameController");
 		gameControllerScript = gameController.GetComponent<GameController> ();
 		rb = GetComponent<Rigidbody2D> ();
 		spriteRenderer = GetComponent<SpriteRenderer> ();
@@ -59,7 +59,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-		if (anim.enabled) {
+		if (anim.enabled && gameControllerScript.GameStarted) {
 
 			Vector3 move = new Vector3 (Input.GetAxis ("Horizontal") * speed, rb.velocity.y, 0f);
 			bool flipSprite = (spriteRenderer.flipX ? (move.x > 0f) : (move.x < 0f));
@@ -102,12 +102,12 @@ public class Player : MonoBehaviour {
 		}
 		if (item == 1) { //CD
 			anim.SetBool ("Hitted", true);
-			life -= 10f;
+			life -= 101f;
 		}
 		if (item == 2) { //Coin
 			points++;
 			pointsText.GetComponent<Text> ().text = points.ToString ();
-			life += 5f;
+			life += 2.5f;
 		}
 
 		StartCoroutine (FinishAnimation ());
@@ -117,8 +117,8 @@ public class Player : MonoBehaviour {
 
 		if (life < 0f) {
 			life = 0f;
-			SceneManager.LoadScene ("RanciusChallenge");
-
+			gameOverText.GetComponent<Text> ().text = "Game Over\n" + points.ToString () + " Puntos Conseguidos";
+			gameControllerScript.EndGame ();
 		}
 	}
 }

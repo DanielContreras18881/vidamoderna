@@ -29,7 +29,7 @@ public class Dj : MonoBehaviour {
 	void Start () {
 		anim = GetComponent<Animator> ();
 		anim.enabled = false;
-		gameController = GameObject.Find ("Game");
+		gameController = GameObject.Find ("GameController");
 		gameControllerScript = gameController.GetComponent<GameController> ();
 		items = GameObject.FindGameObjectsWithTag ("Item");
 		throwAudio = GetComponent<AudioSource> ();
@@ -50,12 +50,12 @@ public class Dj : MonoBehaviour {
 		GameObject tempItem = Instantiate (items[Random.Range (0, 3)], transform.position, transform.rotation) as GameObject;
 		//GameObject tempItem = Instantiate (itemToThrow, transform.position, transform.rotation) as GameObject;
 		Rigidbody2D tempRigidBodyBullet = tempItem.GetComponent<Rigidbody2D> ();
-		Quaternion rotation = Quaternion.Euler (0, 0, Random.Range (-45, 45));
+		Quaternion rotation = Quaternion.Euler (0, 0, Random.Range (-30, 30));
 		Vector3 direction = rotation * tempRigidBodyBullet.transform.up;
 		tempRigidBodyBullet.AddForce (direction * -25f * throwSpeed);
 
 		if (tempItem != null) {
-			//Destroy (tempItem, 100f);
+			Destroy (tempItem, 25f);
 		}
 
 		// Play Audio
@@ -70,15 +70,15 @@ public class Dj : MonoBehaviour {
 	}
 
 	public void UpdateLevel (float value) {
-		speed *= (1 + value / 2);
-		throwSpeed *= (1 + value / 2);
+		speed *= (.95f + value / 2);
+		throwSpeed *= (1.025f + value / 2);
 		fireRatep += value;
 		fireRatem -= value / 5;
 
 	}
 
 	void FixedUpdate () {
-		if (anim.enabled) {
+		if (anim.enabled && gameControllerScript.GameStarted) {
 
 			if (Vector3.Distance (center, transform.position) > limit) {
 				movementDirection *= -1;

@@ -11,7 +11,7 @@ public class LightRotation : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		gameController = GameObject.Find ("Game");
+		gameController = GameObject.Find ("GameController");
 		gameControllerScript = gameController.GetComponent<GameController> ();
 
 	}
@@ -21,7 +21,10 @@ public class LightRotation : MonoBehaviour {
 	}
 
 	public void UpdateLevel (float value) {
-		rotationSpeed *= value;
+		rotationSpeed += (rotationSpeed / 2) - value * 2;
+	}
+
+	public void Update () {
 		// rotate lights located in the center of the screen
 		// transform.Rotate (0, 0, rotationSpeed * Time.deltaTime);
 

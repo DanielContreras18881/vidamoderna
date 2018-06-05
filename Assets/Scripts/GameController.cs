@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
     public GameObject startButton;
+    public GameObject exitButton;
     public GameObject dj;
     public GameObject lights;
     public GameObject player;
@@ -30,19 +32,35 @@ public class GameController : MonoBehaviour {
     public event OnVariableChangeDelegate OnVariableChange;
 
     public void StartGame () {
+        _GameLevel = 0f;
         _GameStarted = true;
         startButton.SetActive (false);
+        exitButton.SetActive (false);
         StartCoroutine (upgradeLevel ());
+    }
+
+    public void EndGame () {
+        _GameStarted = false;
+        exitButton.SetActive (true);
+        StartCoroutine (restartGame ());
+    }
+
+    IEnumerator restartGame () {
+        yield return new WaitForSeconds (7.5f);
+        SceneManager.LoadScene ("RanciusChallenge");
     }
 
     IEnumerator upgradeLevel () {
         yield return new WaitForSeconds (5f);
-        _GameLevel += .05f;
-        Debug.Log (_GameLevel);
+        _GameLevel += .055f;
         dj.GetComponent<Dj> ().UpdateLevel (_GameLevel);
         player.GetComponent<Player> ().UpdateLevel (_GameLevel);
         lights.GetComponent<LightRotation> ().UpdateLevel (_GameLevel);
         StartCoroutine (upgradeLevel ());
+    }
+
+    public void ExitGame () {
+        SceneManager.LoadScene ("Intro");
     }
 
 }
